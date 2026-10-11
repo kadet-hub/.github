@@ -1,0 +1,42 @@
+name: Request a feature
+description: Ask for a new resource, input or default in a generator.
+title: "[feature] "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A wrong compile, wrong docs or a wrong listing of a published version: use
+        [Report a problem](https://github.com/kadet-hub/registry/issues/new?template=generator-report.yml) instead.
+        A security issue: report it privately through the repository's security advisories.
+  - type: input
+    id: generator
+    attributes:
+      label: Generator
+      description: Name as listed on kadet-hub.org
+      placeholder: keda
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: 1.0.0
+  - type: textarea
+    id: need
+    attributes:
+      label: What should it render?
+      description: The resource, field or default you need, and what it is for.
+    validations:
+      required: true
+  - type: textarea
+    id: inventory
+    attributes:
+      label: Inventory you would write
+      description: The block you would like to put in your inventory. No secrets.
+      render: yaml
+  - type: input
+    id: reference
+    attributes:
+      label: Upstream reference
+      description: Link to the vendor documentation or API type that describes it.
