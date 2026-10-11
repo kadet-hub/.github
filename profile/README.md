@@ -4,8 +4,9 @@ A community catalog of [Kapitan](https://kapitan.dev) generators at
 **[kadet-hub.org](https://kadet-hub.org)**.
 
 Every listed version passed secret, malware and code scans, a fixture
-compile in a gVisor sandbox without network, a schema check of its output
-and a maintainer's review. It is published as an attested OCI artifact
+compile in a gVisor sandbox without network and a maintainer's review;
+where the generator ships the schemas of what it renders, its output is
+checked against them. It is published as an attested OCI artifact
 with an SBOM, and you pin it by digest in your inventory.
 
 | | |
