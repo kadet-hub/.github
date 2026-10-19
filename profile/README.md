@@ -1,7 +1,9 @@
 # kadet-hub
 
-A community catalog of [Kapitan](https://kapitan.dev) generators at
-**[kadet-hub.org](https://kadet-hub.org)**.
+Signed [Kapitan](https://kapitan.dev) generators for Kubernetes and
+Terraform, at **[kadet-hub.org](https://kadet-hub.org)**: render manifests
+from your inventory instead of templating them with Helm charts, and review
+the YAML in the pull request.
 
 Every listed version passed secret, malware and code scans, a fixture
 compile in a gVisor sandbox without network and a maintainer's review;
@@ -15,6 +17,7 @@ with an SBOM, and you pin it by digest in your inventory.
 | Publish a generator | [Author guide](https://github.com/kadet-hub/registry/blob/main/docs/authors.md) · [template](https://github.com/kadet-hub/generator-template) |
 | Gate, release and catalog | [kadet-hub/registry](https://github.com/kadet-hub/registry) |
 | Generators maintained here | [kadet-hub/generators](https://github.com/kadet-hub/generators) |
+| Replace Bitnami charts | [Bitnami chart alternatives](https://kadet-hub.org/guides/bitnami-chart-alternatives/) |
 | Vote for a generator | [Generators discussions](https://github.com/kadet-hub/registry/discussions/categories/generators) |
 
 kadet-hub is run by the community and is not affiliated with the Kapitan
