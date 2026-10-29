@@ -8,7 +8,7 @@ body:
       value: |
         A wrong compile, wrong docs or a wrong listing of a published version: use
         [Report a problem](https://github.com/kadet-hub/registry/issues/new?template=generator-report.yml) instead.
-        A security issue: report it privately through the repository's security advisories.
+        A security issue: do not open an issue, report it as the repository's SECURITY.md describes.
   - type: input
     id: generator
     attributes:
