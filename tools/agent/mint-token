@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Mints an installation token of the kadet-hub agent app for the named
+# repositories and prints it on stdout, for GH_TOKEN of an agent session
+# (AGT-4 in kadet-hub/registry docs/specs/agents.md).
+#
+# Usage: mint-token <repository>...
+#   AGENT_APP_ID   client ID or app ID of the app
+#   AGENT_KEY_REF  op:// reference of the private key in 1Password
+#
+# The key goes from op read through a pipe into openssl: never a file, a
+# variable or a command line argument. The JWT reaches curl on stdin, since
+# other local users can read a process's command line. Only the token goes
+# to stdout; errors go to stderr.
+set -euo pipefail
+
+: "${AGENT_APP_ID:?set AGENT_APP_ID to the client ID or app ID}"
+: "${AGENT_KEY_REF:?set AGENT_KEY_REF to the op:// reference of the private key}"
+(($#)) || { echo "usage: mint-token <repository>..." >&2; exit 2; }
+api=${GITHUB_API_URL:-https://api.github.com}
+
+b64url() { openssl base64 -A | tr '+/' '-_' | tr -d '='; }
+
+now=$(date +%s)
+header=$(printf '{"alg":"RS256","typ":"JWT"}' | b64url)
+# iat 60 s back for clock drift, exp within GitHub's 10 minutes; a numeric app ID stays a number.
+payload=$(jq -cn --arg iss "$AGENT_APP_ID" --argjson now "$now" \
+  '{iat: ($now - 60), exp: ($now + 540), iss: ($iss | tonumber? // $iss)}' | b64url)
+signature=$(printf '%s.%s' "$header" "$payload" \
+  | openssl dgst -sha256 -binary -sign <(op read "$AGENT_KEY_REF") | b64url)
+jwt=$header.$payload.$signature
+
+# call <method> <path> <expected status> [<body>]: prints the response body.
+call() {
+  local out code
+  out=$(printf 'Authorization: Bearer %s\n' "$jwt" | curl -sS -X "$1" -H @- \
+    -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' \
+    ${4:+--data "$4"} -w '\n%{http_code}' -- "$api$2")
+  code=${out##*$'\n'}
+  out=${out%$'\n'*}
+  if [[ $code != "$3" ]]; then
+    echo "mint-token: $1 $2: HTTP $code: $(printf '%s' "$out" | jq -r '.message // empty' 2>/dev/null)" >&2
+    return 1
+  fi
+  printf '%s' "$out"
+}
+
+installation=$(call GET /orgs/kadet-hub/installation 200 | jq -er .id)
+call POST "/app/installations/$installation/access_tokens" 201 \
+  "$(jq -cn '{repositories: $ARGS.positional}' --args "$@")" | jq -er .token
