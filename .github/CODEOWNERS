@@ -1,4 +1,3 @@
-# Code owner review for the workflows and for tools/agent/mint-token, which
-# handles the agent app's key (AGT-4, AGT-10 in kadet-hub/registry docs/specs/agents.md).
+# Code owner review for the workflows and the review gate's decision script
+# (RG-2 in docs/specs/review-gate.md).
 /.github/ @Moep90
-/tools/ @Moep90
