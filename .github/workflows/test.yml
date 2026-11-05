@@ -1,0 +1,25 @@
+name: test
+
+# The review gate's unit tests (RG-1, RG-2) on pull requests that change it.
+on:
+  pull_request:
+    paths:
+      - .github/review-gate/**
+      - .github/workflows/review-gate.yml
+      - .github/workflows/test.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Unit tests
+        run: python3 -m unittest discover -s .github/review-gate -v

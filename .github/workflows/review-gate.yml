@@ -1,0 +1,44 @@
+name: review-gate
+
+# RG-1 to RG-3 in docs/specs/review-gate.md. Called from a workflow that runs
+# on pull_request (opened, synchronize, reopened) and pull_request_review
+# (submitted, dismissed), pinned by commit SHA. Both events give a fork a
+# read-only token. The job checks out nothing; it reads reviews through the
+# API with a decision script from this repository at the pinned commit.
+on:
+  workflow_call:
+    inputs:
+      reviewers:
+        description: Logins whose latest review must approve the head commit, separated by spaces
+        type: string
+        default: neat-bot
+
+permissions: {}
+
+jobs:
+  review-gate:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    # A newer event cancels an older run, so a stale result cannot land last.
+    concurrency:
+      group: review-gate-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - name: Decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GATE_REPO: ${{ job.workflow_repository }}
+          GATE_SHA: ${{ job.workflow_sha }}
+          REVIEWERS: ${{ inputs.reviewers }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        # job.workflow_* needs runner 2.334.0 or newer; empty would mean main's script.
+        run: |
+          : "${GATE_REPO:?no job.workflow_repository}" "${GATE_SHA:?no job.workflow_sha}"
+          gh api -H 'Accept: application/vnd.github.raw+json' \
+            "repos/$GATE_REPO/contents/.github/review-gate/review_gate.py?ref=$GATE_SHA" > "$RUNNER_TEMP/review_gate.py"
+          python3 "$RUNNER_TEMP/review_gate.py"
