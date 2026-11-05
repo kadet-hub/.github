@@ -39,7 +39,10 @@ def decide(author, head, reviews, has_write, reviewers):
 
 
 def gh(path, jq):
-    return subprocess.run(["gh", "api", "--paginate", path, "--jq", jq], check=True, capture_output=True, text=True).stdout
+    run = subprocess.run(["gh", "api", "--paginate", path, "--jq", jq], capture_output=True, text=True)
+    if run.returncode:
+        sys.exit(f"review gate failed: gh api {path}: {run.stderr.strip()}")
+    return run.stdout
 
 
 def main():

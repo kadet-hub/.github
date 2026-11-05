@@ -95,7 +95,8 @@ The comparison is exact, and no user account can be named `renovate[bot]`.
     change request without write access, two reviewers who both approved
     and a Renovate pull request pass. `Decide` also checks that write
     access is looked up only for change requesters and that a review by a
-    deleted account is ignored.
+    deleted account is ignored; `Api` that an API error fails the gate
+    with the endpoint and `gh`'s message.
   - Since: this change
 
 ## Fork pull requests

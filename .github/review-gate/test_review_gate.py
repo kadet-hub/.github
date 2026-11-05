@@ -1,8 +1,10 @@
 import json
 import os
 import re
+import subprocess
 import sys
 import unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -37,6 +39,14 @@ class Decide(unittest.TestCase):  # RG-1
             {"user": {"login": "neat-bot"}, "state": "APPROVED", "commit_id": "a"},
         ]
         self.assertEqual(review_gate.decide("kadet-hub-agent[bot]", "a", reviews, lambda login: True, ["neat-bot"]), [])
+
+
+class Api(unittest.TestCase):  # RG-1
+    def test_error_names_the_endpoint(self):
+        failed = subprocess.CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
+        with mock.patch.object(review_gate.subprocess, "run", return_value=failed), self.assertRaises(SystemExit) as exit:
+            review_gate.gh("repos/o/r/pulls/1/reviews", ".[]")
+        self.assertEqual(str(exit.exception.code), "review gate failed: gh api repos/o/r/pulls/1/reviews: gh: Not Found (HTTP 404)")
 
 
 class Workflow(unittest.TestCase):  # RG-2
