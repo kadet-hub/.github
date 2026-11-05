@@ -1,0 +1,16 @@
+name: review-gate selftest
+
+# Temporary: runs this pull request's own review gate once, to see the
+# reusable workflow work. Removed again before the merge.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  review-gate:
+    uses: ./.github/workflows/review-gate.yml
