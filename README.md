@@ -33,7 +33,10 @@ jobs:
 `reviewers` takes the reviewer logins separated by spaces and defaults to
 `neat-bot`; each of them must approve. The check is named
 `review-gate / review-gate`, and a ruleset requires it under that name with
-GitHub Actions as its source.
+GitHub Actions as its source. Before a ruleset requires the check, the
+repository needs a `renovate branches` ruleset that lets only Renovate and
+the admin role push to `renovate/`, because Renovate's pull requests pass
+the gate by their author.
 
 The check runs on every push and on every submitted or dismissed review.
 A result in `neat-bot`'s status comment without an approval does not pass

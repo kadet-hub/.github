@@ -71,7 +71,10 @@ users with an open change request.
 
 Renovate merges its own pull request only once every check passed (REV-5),
 and the gate cannot tell which of its pull requests Renovate will merge
-itself, so all of them pass.
+itself, so all of them pass. The gate goes by the pull request's author,
+which stays `renovate[bot]` when someone else pushes to the branch, so the
+exemption is only as good as the protection of `renovate/` branches (RG-3).
+The comparison is exact, and no user account can be named `renovate[bot]`.
 
 - RG-1: The `review-gate` job MUST fail until the latest review of every
   login in the `reviewers` input approves the pull request's head commit
@@ -135,6 +138,20 @@ same pull request cancels an older one, so a stale result cannot land last.
   - Test: manual: the caller workflow of each repository
   - Since: not implemented
 
+- RG-3a: A repository that requires the check MUST restrict creating,
+  updating and deleting branches under `renovate/` to Renovate and the
+  admin role.
+
+  Otherwise anyone with write access, an agent app included, can push a
+  commit to a Renovate pull request, and the gate passes it unreviewed.
+  The registry and recipes have such a ruleset, `renovate branches`
+  (registry REV-3); the other repositories do not yet.
+
+  - Test: manual: `gh api repos/kadet-hub/<repo>/rulesets` lists
+    `renovate branches` with only Renovate and the admin role as bypass
+    actors
+  - Since: not implemented
+
 ## How changes are reviewed
 
 - RG-4: README.md MUST carry a "How changes are reviewed" text that
@@ -158,4 +175,4 @@ same pull request cancels an older one, so a stale result cannot land last.
 | `.github/workflows/review-gate.yml`: the reusable workflow, input `reviewers` | RG-1, RG-2 |
 | `.github/review-gate/review_gate.py`, `fixtures.json`, `test_review_gate.py` | RG-1, RG-2 |
 | `.github/workflows/test.yml`: runs the tests on pull requests that change the gate | RG-1, RG-2 |
-| `README.md`: caller snippet and the "How changes are reviewed" text | RG-3, RG-4 |
+| `README.md`: caller snippet and the "How changes are reviewed" text | RG-3, RG-3a, RG-4 |
