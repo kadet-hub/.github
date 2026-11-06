@@ -73,7 +73,7 @@ Renovate merges its own pull request only once every check passed (REV-5),
 and the gate cannot tell which of its pull requests Renovate will merge
 itself, so all of them pass. The gate goes by the pull request's author,
 which stays `renovate[bot]` when someone else pushes to the branch, so the
-exemption is only as good as the protection of `renovate/` branches (RG-3).
+exemption is only as good as the protection of `renovate/` branches (RG-3a).
 The comparison is exact, and no user account can be named `renovate[bot]`.
 
 - RG-1: The `review-gate` job MUST fail until the latest review of every
